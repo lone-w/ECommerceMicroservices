@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/ApiGateway/">
+    <Project Path="ApiGateway/ApiGateway.csproj" />
+  </Folder>
+  <Folder Name="/src/BuildingBlocks/" />
+  <Folder Name="/src/BuildingBlocks/Common/" />
+  <Folder Name="/src/Services/">
+    <Project Path="Customer.API/Customer.API.csproj" />
+    <Project Path="Order.API/Order.API.csproj" />
+    <Project Path="Product.API/Product.API.csproj" />
+  </Folder>
+</Solution>

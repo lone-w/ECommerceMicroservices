@@ -12,7 +12,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Log in to GHCR
+      # Login to GitHub Container Registry
+      - name: Login to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -20,33 +21,68 @@ jobs:
           password: ${{ secrets.GHCR_TOKEN }}
 
       # --------------------------
-      # Product.API
+      # Function to build & push
       # --------------------------
       - name: Build & Push Product.API
         run: |
-          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/product-api:latest ./Product.API
-          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/product-api:latest
+          IMAGE=ghcr.io/${{ secrets.GHCR_USERNAME }}/product-api
+          docker build -t $IMAGE:latest -t $IMAGE:${{ github.sha }} ./Product.API
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
 
-      # --------------------------
-      # Order.API
-      # --------------------------
+      - name: Make Product.API Public
+        run: |
+          curl -L \
+            -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.GHCR_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"visibility":"public"}' \
+            https://api.github.com/user/packages/container/${{ secrets.GHCR_USERNAME }}%2Fproduct-api
+
       - name: Build & Push Order.API
         run: |
-          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/order-api:latest ./Order.API
-          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/order-api:latest
+          IMAGE=ghcr.io/${{ secrets.GHCR_USERNAME }}/order-api
+          docker build -t $IMAGE:latest -t $IMAGE:${{ github.sha }} ./Order.API
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
 
-      # --------------------------
-      # Customer.API
-      # --------------------------
+      - name: Make Order.API Public
+        run: |
+          curl -L \
+            -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.GHCR_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"visibility":"public"}' \
+            https://api.github.com/user/packages/container/${{ secrets.GHCR_USERNAME }}%2Forder-api
+
       - name: Build & Push Customer.API
         run: |
-          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/customer-api:latest ./Customer.API
-          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/customer-api:latest
+          IMAGE=ghcr.io/${{ secrets.GHCR_USERNAME }}/customer-api
+          docker build -t $IMAGE:latest -t $IMAGE:${{ github.sha }} ./Customer.API
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
 
-      # --------------------------
-      # API Gateway
-      # --------------------------
+      - name: Make Customer.API Public
+        run: |
+          curl -L \
+            -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.GHCR_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"visibility":"public"}' \
+            https://api.github.com/user/packages/container/${{ secrets.GHCR_USERNAME }}%2Fcustomer-api
+
       - name: Build & Push ApiGateway
         run: |
-          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/api-gateway:latest ./ApiGateway
-          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/api-gateway:latest
+          IMAGE=ghcr.io/${{ secrets.GHCR_USERNAME }}/api-gateway
+          docker build -t $IMAGE:latest -t $IMAGE:${{ github.sha }} ./ApiGateway
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}
+
+      - name: Make ApiGateway Public
+        run: |
+          curl -L \
+            -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.GHCR_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"visibility":"public"}' \
+            https://api.github.com/user/packages/container/${{ secrets.GHCR_USERNAME }}%2Fapi-gateway
